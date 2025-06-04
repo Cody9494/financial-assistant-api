@@ -54,26 +54,7 @@ We have chosen three different models, each with its own advantages:
 - Support for multiple models
 - Optimized parameters for each model
 
-## Docker Support
 
-To run the application with Docker:
-
-```bash
-docker build -t financial-assistant .
-docker run -p 8000:8000 financial-assistant
-```
-
-## API Endpoint
-
-```
-POST /ask
-Content-Type: application/json
-
-{
-    "question": "How can I start budgeting?",
-    "model_choice": "tinyllama"  // or "phi2" or "stablelm"
-}
-```
 
 Response:
 ```json
