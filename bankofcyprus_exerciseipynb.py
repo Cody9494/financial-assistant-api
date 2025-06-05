@@ -113,123 +113,37 @@ _ = model.generate(
     top_p                = 0.9
 )
 
-# Commented out IPython magic to ensure Python compatibility.
-# %%writefile main.py
-# from fastapi import FastAPI
-# from pydantic import BaseModel
-# from unsloth import FastLanguageModel
-# from unsloth.chat_templates import get_chat_template
-# import torch
-# 
-# app = FastAPI()
-# 
-# class QuestionRequest(BaseModel):
-#     question: str
-# 
-# model_name = "unsloth/mistral-7b-instruct-v0.3-bnb-4bit"
-# model, tokenizer = FastLanguageModel.from_pretrained(
-#     model_name=model_name,
-#     max_seq_length=2048,
-#     dtype=None,
-#     load_in_4bit=True,
-# )
-# FastLanguageModel.for_inference(model)
-# 
-# tokenizer = get_chat_template(
-#     tokenizer,
-#     chat_template="chatml",
-#     mapping={"role": "from", "content": "value", "user": "human", "assistant": "gpt"},
-#     map_eos_token=True,
-# )
-# 
-# @app.post("/ask")
-# async def ask_question(request: QuestionRequest):
-#     question = request.question.strip()
-# 
-#     messages = [
-#         {"from": "system", "value": "You are a helpful and trustworthy financial assistant."},
-#         {"from": "user", "value": question}
-#     ]
-# 
-#     prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-#     inputs = tokenizer(prompt, return_tensors="pt").to("cuda" if torch.cuda.is_available() else "cpu")
-# 
-#     with torch.no_grad():
-#         outputs = model.generate(**inputs, max_new_tokens=200, do_sample=True, temperature=0.7)
-#         answer = tokenizer.decode(outputs[0], skip_special_tokens=True).replace(prompt, "").strip()
-# 
-#     return {"answer": answer}
-#
+# Define structured conversation
+messages = [
+    {"from": "system", "value": "You are a helpful and trustworthy financial assistant."},
+    {"from": "user", "value": "How can I start investing in the stock market?"}
+]
 
-from google.colab import files
-files.download('main.py')
+inputs = tokenizer([tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)], return_tensors = "pt").to("cuda")
 
-import subprocess
-subprocess.run(['pip', 'install', 'gradio', 'transformers'])
+text_streamer = TextStreamer(tokenizer)
 
-import gradio as gr
-from transformers import pipeline
-
-# Φόρτωση μοντέλου (CPU-friendly)
-generator = pipeline("text-generation", model="distilgpt2")
-
-# Συνάρτηση που καλείται όταν ο χρήστης πατήσει submit
-def respond_to_prompt(prompt):
-    result = generator(prompt, max_length=100, do_sample=True)[0]["generated_text"]
-    return result.strip()
-
-# Δημιουργία GUI
-interface = gr.Interface(
-    fn=respond_to_prompt,
-    inputs=gr.Textbox(label="Ask me something"),
-    outputs=gr.Textbox(label="Answer"),
-    title="🧠 GenAI Financial Assistant",
-    description="Type a question and get an AI-generated answer."
+_ = model.generate(
+    **inputs,
+    streamer             = text_streamer,
+    max_new_tokens       = 512,
+    temperature          = 0.1,
 )
 
-# Εκκίνηση σε browser
-interface.launch(share=True)  # share=True για public URL στο Colab
+# Define structured conversation
+messages = [
+    {"from": "system", "value": "You are a helpful and trustworthy financial assistant."},
+    {"from": "user", "value": "How can i protect my financial info from scams?"}
+]
 
-import gradio as gr
-import torch
+inputs = tokenizer([tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)], return_tensors = "pt").to("cuda")
 
-def generate_response(prompt):
-    # Format the prompt (can adapt based on your tokenizer setup)
-    messages = [
-        {"from": "system", "value": "You are a helpful assistant."},
-        {"from": "user", "value": prompt}
-    ]
+text_streamer = TextStreamer(tokenizer)
 
-    # Chat-style prompt (if using chat_template like chatml)
-    formatted_prompt = tokenizer.apply_chat_template(
-        messages,
-        tokenize=False,
-        add_generation_prompt=True
-    )
-
-    inputs = tokenizer(formatted_prompt, return_tensors="pt").to(model.device)
-
-    with torch.no_grad():
-        output = model.generate(
-            **inputs,
-            streamer=text_streamer,
-            max_new_tokens=512,
-            temperature=0.1,
-            # Optional tuning:
-            # top_k=50,
-            # top_p=0.9,
-            # no_repeat_ngram_size=2
-        )
-
-    response = tokenizer.decode(output[0], skip_special_tokens=True).replace(formatted_prompt, "").strip()
-    return response
-
-# Build Gradio UI
-gr.Interface(
-    fn=generate_response,
-    inputs=gr.Textbox(label="Enter your question"),
-    outputs=gr.Textbox(label="Answer"),
-    title="GenAI Financial Assistant",
-    description="Type a question and get an AI-generated answer.",
-).launch(share=True)
+_ = model.generate(
+    **inputs,
+    streamer             = text_streamer,
+    max_new_tokens       = 512,
+    temperature          = 0.1,
+)
 
