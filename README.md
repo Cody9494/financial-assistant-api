@@ -1,54 +1,101 @@
-This is a lightweight financial assistant API that answers personal finance questions using an open-source language model.
+# Ask a Financial Question – Powered by GenAI (Google Colab Prototype)
 
-🔧 Features
+This project demonstrates how Generative AI can be used to make personal finance more accessible. It is a prototype that simulates a financial assistant using a large open-source language model.
 
-Accepts natural language finance questions via a /ask REST endpoint
+---
 
-Uses the unsloth/mistral-7b-instruct-v0.3-bnb-4bit model (CPU/GPU friendly)
+## ✅ What I Built
 
-Includes basic moderation (content filtering)
+I created a **Google Colab prototype** that:
 
-Returns a short, helpful answer in JSON format
+- Accepts a **natural language question** (e.g., “How can I start budgeting?”)
+- Uses the **`unsloth/mistral-7b-instruct-v0.3-bnb-4bit`** model to generate short, relevant answers
+- Constructs chat-style prompts using `chatml` format
+- Streams the model’s output in real time
 
-Getting Started
+---
 
-1. Clone the repository
+## 🧠 Model and Libraries Used
 
-git clone https://github.com/your-username/genai-finance-assistant.git
-cd genai-finance-assistant
+### 🔹 Model: `unsloth/mistral-7b-instruct-v0.3-bnb-4bit`
+- A quantized, instruction-tuned Mistral variant designed for efficient inference on Colab (GPU).
+- Supports 4-bit loading via `unsloth` to avoid out-of-memory errors.
 
-2. Install dependencies
+### 🔹 Library: `unsloth`
+- Simplifies the loading, tuning, and inference of large transformer models.
+- Offers `FastLanguageModel` and chat template utilities to simulate assistant behavior.
 
-pip install fastapi uvicorn torch unsloth
+### 🔹 Tokenizer Prompting
+I applied a structured **chat template** (`chatml`) using:
+```python
+messages = [
+    {"from": "system", "value": "You are a helpful and trustworthy financial assistant."},
+    {"from": "user", "value": "How can I start budgeting?"}
+]
+Then used:
 
-3. Run the app
+python
+Copy
+Edit
+tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+🔹 Output Generation
+Used the model’s .generate() function with:
 
-uvicorn main:app --reload
+Temperature = 0.1 (low randomness for consistency)
 
-4. Test it with curl or Postman
+Max tokens = 512
 
-curl -X POST http://localhost:8000/ask \
-     -H "Content-Type: application/json" \
-     -d '{"question": "How do I start an emergency fund?"}'
+Real-time response via TextStreamer
 
-Why This Model?
+🧪 Example Output
+Input:
 
-We chose unsloth/mistral-7b-instruct-v0.3-bnb-4bit because:
+How can I start budgeting?
 
-It’s optimized for CPU/GPU usage with low memory
+Response:
 
-Instruction-tuned for better responses to user queries
+To start budgeting, follow these steps:
 
-Compact and fast enough to run without needing expensive hardware
+1. Determine your income: Write down all sources of income, including salary, bonuses, and any other regular or irregular income.
 
-Sample Questions to Try
+2. List your expenses: Write down all your regular expenses, such as rent, utilities, groceries, transportation, and entertainment. Don't forget to include irregular expenses, such as insurance premiums, car maintenance, and holiday expenses.
 
-"How can I start budgeting?"
+3. Categorize your expenses: Group your expenses into categories, such as housing, transportation, food, entertainment, and savings.
 
-"What's the 50/30/20 rule?"
+4. Set financial goals: Decide what you want to achieve financially, such as paying off debt, saving for a down payment on a house, or building an emergency fund.
 
-"How do I save for retirement in my 30s?"
+5. Create a budget: Allocate a specific amount for each expense category based on your income and financial goals. Make sure to leave some room for unexpected expenses.
 
-"What's a good credit score?"
+6. Track your spending: Regularly track your spending to see if you're staying within your budget. Use a budgeting app, spreadsheet, or pen and paper to keep track.
 
-"How much emergency savings should I have?"
+7. Adjust your budget as needed: If you find that you're consistently overspending in a certain category, adjust your budget to reflect more realistic spending habits.
+
+8. Review and adjust your budget regularly: Review your budget regularly to make sure it's still meeting your financial goals. Adjust as needed to account for changes in your income, expenses, or financial goals.
+
+By following these steps, you'll be on your way to creating a budget that helps you manage your money effectively and achieve your financial goals.<|im_end|>
+
+
+❌ What I Did Not Build (and Why)
+🚫 REST API endpoint (/ask)
+I focused on the core logic of question-answering.
+
+Did not implement FastAPI due to:
+
+Colab environment not being optimized for REST endpoints
+
+Local system incompatibility with unsloth (requires NVIDIA/Intel GPU)
+
+🚫 Content moderation / jailbreak guardrails
+Not implemented in this prototype
+
+Can be added via simple keyword filters or safety classifiers in future versions
+
+🚫 Hosting or Docker setup
+This prototype runs entirely in Google Colab using a free GPU session.
+
+🛠️ How to Run the Notebook
+Open the Colab notebook
+
+Enable GPU from Runtime > Change runtime type > GPU
+
+Run all cells top to bottom
