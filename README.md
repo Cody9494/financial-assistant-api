@@ -1,54 +1,54 @@
-# Financial Assistant API
+This is a lightweight financial assistant API that answers personal finance questions using an open-source language model.
 
-A lightweight application that uses open-source AI models to answer personal finance questions.
+🔧 Features
 
-## How to Run Locally
+Accepts natural language finance questions via a /ask REST endpoint
 
-1. Install the required libraries:
-```bash
-pip install -r requirements.txt
-```
+Uses the unsloth/mistral-7b-instruct-v0.3-bnb-4bit model (CPU/GPU friendly)
 
-2. Run the application:
-```bash
-python main.py
-```
+Includes basic moderation (content filtering)
 
-3. The application will be available at `http://localhost:8000`
+Returns a short, helpful answer in JSON format
 
-## Why These Models?
+Getting Started
 
-We have chosen three different models, each with its own advantages:
+1. Clone the repository
 
-1. **TinyLlama (1.1B)**
-   - Very lightweight (1.1 billion parameters)
-   - Ideal for systems with limited resources
-   - Good performance in conversational tasks
-   - Runs on CPU without special requirements
+git clone https://github.com/your-username/genai-finance-assistant.git
+cd genai-finance-assistant
 
-2. **Phi-2 (2.7B)**
-   - Model from Microsoft
-   - Excellent answer quality for its size
-   - Good performance in reasoning tasks
-   - Optimized for conversations
+2. Install dependencies
 
-3. **StableLM-2-1.6B**
-   - Stable and reliable model from Stability AI
-   - Good performance in conversational tasks
-   - Lightweight and fast
-   - Good community support
+pip install fastapi uvicorn torch unsloth
 
-## Sample Questions to Try
+3. Run the app
 
-1. "How can I start budgeting?"
-2. "What's the best strategy to pay off my debts?"
-3. "How can I start investing in the stock market?"
-4. "How can I protect my financial information from scams?"
+uvicorn main:app --reload
 
-## Features
+4. Test it with curl or Postman
 
-- Inappropriate content filtering
-- Prompt injection protection
-- Clean and concise answers
-- Support for multiple models
-- Optimized parameters for each model
+curl -X POST http://localhost:8000/ask \
+     -H "Content-Type: application/json" \
+     -d '{"question": "How do I start an emergency fund?"}'
+
+Why This Model?
+
+We chose unsloth/mistral-7b-instruct-v0.3-bnb-4bit because:
+
+It’s optimized for CPU/GPU usage with low memory
+
+Instruction-tuned for better responses to user queries
+
+Compact and fast enough to run without needing expensive hardware
+
+Sample Questions to Try
+
+"How can I start budgeting?"
+
+"What's the 50/30/20 rule?"
+
+"How do I save for retirement in my 30s?"
+
+"What's a good credit score?"
+
+"How much emergency savings should I have?"
